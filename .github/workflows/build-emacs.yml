@@ -28,23 +28,11 @@ jobs:
             libjpeg-dev libpng-dev libtiff-dev libgif-dev \
             libxpm-dev libxml2-dev \
             libtree-sitter-dev librsvg2-dev libmagickwand-dev \
-            xz-utils mingw-w64 \
+            xz-utils \
+            mingw-w64 \
             jq # Install jq for JSON parsing
 
-      # 3. Install the latest version of Zig
-      - name: Install Zig (latest stable)
-        run: |
-          curl -s https://ziglang.org/download/index.json > zig-versions.json
-          LATEST_ZIG_VERSION=$(jq -r 'keys | .[]' zig-versions.json | grep -v 'master' | sort -V | tail -n 1)
-          echo "Latest Zig version is $LATEST_ZIG_VERSION"
-          TARBALL_URL=$(jq -r --arg V "$LATEST_ZIG_VERSION" '.[$V]."x86_64-linux".tarball' zig-versions.json)
-          wget "$TARBALL_URL"
-          TARBALL_NAME=$(basename "$TARBALL_URL")
-          tar -xf "$TARBALL_NAME"
-          EXTRACTED_DIR_NAME=$(basename "$TARBALL_NAME" .tar.xz)
-          echo "$(pwd)/$EXTRACTED_DIR_NAME" >> $GITHUB_PATH
-
-      # 4. Determine the latest Emacs release tag
+      # 3. Determine the latest Emacs release tag
       - name: Determine Latest Emacs Tag
         id: get_tag
         run: |
@@ -70,22 +58,20 @@ jobs:
           echo "Selected latest tag is $LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
 
-      # 5. Clone the specific Emacs release tag
+      # 4. Clone the specific Emacs release tag
       - name: Clone Emacs source (latest tag)
         run: |
           git clone --depth 1 --branch ${{ env.LATEST_TAG }} git://git.savannah.gnu.org/emacs.git
 
-      # 6. Build Emacs
+      # 5. Build Emacs
       - name: Build Emacs
         working-directory: ./emacs
         run: |
           export TARGET="x86_64-w64-mingw32"
-          export CPPFLAGS="-I/usr/x86_64-w64-mingw32/include"
-          export LDFLAGS="-L/usr/x86_64-w64-mingw32/lib"
           ./autogen.sh
           ./configure --host=$TARGET \
-                      CC="zig cc -target $TARGET" \
-                      CXX="zig c++ -target $TARGET" \
+                      CC="x86_64-w64-mingw32-gcc" \
+                      CXX="x86_64-w64-mingw32-g++" \
                       --without-dbus \
                       --without-ncurses \
                       --with-native-compilation=aot \
@@ -99,19 +85,19 @@ jobs:
           make -j$(nproc)
           make install-strip DESTDIR=../../emacs-win-dist
 
-      # 7. Package the build into a versioned zip file
+      # 6. Package the build into a versioned zip file
       - name: Package the build
         run: |
           zip -r emacs-windows-${{ env.LATEST_TAG }}.zip ./emacs-win-dist
 
-      # 8. Upload the versioned build artifact
+      # 7. Upload the versioned build artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: emacs-windows-build-${{ env.LATEST_TAG }}
           path: emacs-windows-${{ env.LATEST_TAG }}.zip
 
-      # 9. Clean up old artifacts to stay within storage limits
+      # 8. Clean up old artifacts to stay within storage limits
       - name: Clean up old artifacts
         uses: c-hive/gha-remove-artifacts@v1
         with:
