@@ -80,8 +80,7 @@ jobs:
                       --with-png \
                       --with-jpeg \
                       --with-rsvg \
-                      --with-tiff \
-                      --with-imagemagick
+                      --with-tiff
           make -j$(nproc)
           make install-strip DESTDIR=../../emacs-win-dist
 
