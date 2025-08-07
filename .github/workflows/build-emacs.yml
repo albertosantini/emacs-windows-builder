@@ -1,0 +1,87 @@
+name: Build Emacs for Windows
+
+# Events that trigger the workflow
+on:
+  # 1. Allows manually running the workflow from the GitHub "Actions" tab
+  workflow_dispatch:
+
+  # 2. Runs the workflow every Monday at 02:00 UTC
+  schedule:
+    - cron: '0 2 * * 1'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Use a Linux runner for easier dependency management
+
+    steps:
+      # 1. Checkout your repository (if you have local scripts)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Install Emacs build dependencies and jq
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential autoconf automake texinfo \
+            libgnutls28-dev libncurses-dev libjansson-dev \
+            libjpeg-dev libpng-dev libtiff-dev libgif-dev \
+            libxpm-dev libxml2-dev \
+            jq # Install jq for JSON parsing
+
+      # 3. Install the latest version of Zig
+      - name: Install Zig (latest stable)
+        run: |
+          curl -s https://ziglang.org/download/index.json > zig-versions.json
+          LATEST_ZIG_VERSION=$(jq -r 'keys | .[]' zig-versions.json | grep -v 'master' | sort -V | tail -n 1)
+          echo "Latest Zig version is $LATEST_ZIG_VERSION"
+          TARBALL_URL=$(jq -r --arg V "$LATEST_ZIG_VERSION" '.[$V]."x86_64-linux".tarball' zig-versions.json)
+          wget "$TARBALL_URL"
+          tar -xf zig-linux-x86_64-*.tar.xz
+          echo "$(pwd)/zig-linux-x86_64-*" >> $GITHUB_PATH
+
+      # 4. Determine the latest Emacs release tag
+      - name: Determine Latest Emacs Tag
+        id: get_tag
+        run: |
+          LATEST_TAG=$(git ls-remote --tags --ref git://git.savannah.gnu.org/emacs.git \
+            | grep -E 'refs/tags/emacs-[0-9]+\.[0-9]+(\.[0-9]+)?$' \
+            | sort -V \
+            | tail -n 1 \
+            | awk -F/ '{print $3}')
+          echo "Latest Emacs tag is $LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
+      # 5. Clone the specific Emacs release tag
+      - name: Clone Emacs source (latest tag)
+        run: |
+          git clone --depth 1 --branch ${{ env.LATEST_TAG }} git://git.savannah.gnu.org/emacs.git
+
+      # 6. Build Emacs
+      - name: Build Emacs
+        working-directory: ./emacs
+        run: |
+          export TARGET="x86_64-windows-gnu"
+          ./autogen.sh
+          ./configure --host=$TARGET \
+                      CC="zig cc -target $TARGET" \
+                      CXX="zig c++ -target $TARGET" \
+                      --without-dbus \
+                      --with-native-compilation=aot
+          make -j$(nproc)
+          make install-strip DESTDIR=../emacs-win-dist
+
+      # 7. Package the build into a versioned zip file
+      - name: Package the build
+        run: |
+          # The zip file will now have the version in its name, e.g., emacs-windows-emacs-29.3.zip
+          zip -r emacs-windows-${{ env.LATEST_TAG }}.zip ./emacs-win-dist
+
+      # 8. Upload the versioned build artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # The artifact name for the download page
+          name: emacs-windows-build-${{ env.LATEST_TAG }}
+          # The path to the actual file to be uploaded, which is now also versioned
+          path: emacs-windows-${{ env.LATEST_TAG }}.zip
