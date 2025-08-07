@@ -69,6 +69,8 @@ jobs:
           export PATH="/usr/x86_64-w64-mingw32/bin:$PATH"
           export AR="x86_64-w64-mingw32-ar"
           export RANLIB="x86_64-w64-mingw32-ranlib"
+          export CPPFLAGS="-I/usr/x86_64-w64-mingw32/include -I/usr/x86_64-w64-mingw32/include/zlib"
+          export LDFLAGS="-L/usr/x86_64-w64-mingw32/lib -lz"
           ./autogen.sh
           ./configure --build=x86_64-pc-linux-gnu --host=$TARGET --target=$TARGET \
                       CC="x86_64-w64-mingw32-gcc" \
