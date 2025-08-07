@@ -87,7 +87,7 @@ jobs:
                       --without-imagemagick
           make -j$(nproc)
           make install-strip DESTDIR=../../emacs-win-dist
-        if: always()
+      - name: Show config logs
         run: |
           if [ -f "config.log" ]; then
             echo "--- config.log content ---"
