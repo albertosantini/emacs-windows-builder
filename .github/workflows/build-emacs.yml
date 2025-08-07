@@ -80,6 +80,8 @@ jobs:
         working-directory: ./emacs
         run: |
           export TARGET="x86_64-w64-mingw32"
+          export CPPFLAGS="-I/usr/x86_64-w64-mingw32/include"
+          export LDFLAGS="-L/usr/x86_64-w64-mingw32/lib"
           ./autogen.sh
           ./configure --host=$TARGET \
                       CC="zig cc -target $TARGET" \
