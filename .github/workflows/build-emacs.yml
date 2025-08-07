@@ -28,7 +28,7 @@ jobs:
             libjpeg-dev libpng-dev libtiff-dev libgif-dev \
             libxpm-dev libxml2-dev \
             libtree-sitter-dev librsvg2-dev libmagickwand-dev \
-            xz-utils \
+            xz-utils mingw-w64 \
             jq # Install jq for JSON parsing
 
       # 3. Install the latest version of Zig
