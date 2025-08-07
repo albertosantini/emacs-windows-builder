@@ -48,13 +48,26 @@ jobs:
       - name: Determine Latest Emacs Tag
         id: get_tag
         run: |
-          LATEST_TAG=$(git ls-remote --tags --ref git://git.savannah.gnu.org/emacs.git \
-            | grep -E 'refs/tags/emacs-[0-9]+\.[0-9]+(\.[0-9]+)?$' \
+          ALL_TAGS=$(git ls-remote --tags --ref git://git.savannah.gnu.org/emacs.git \
+            | grep -o 'refs/tags/emacs-[0-9.]*$' \
+            | sed 's|refs/tags/||')
+
+          LATEST_STABLE_TAG=$(echo "$ALL_TAGS" \
             | grep -v -E '\.([5-9][0-9]|[1-9][0-9]{2,})$' \
             | sort -V \
-            | tail -n 1 \
-            | awk -F/ '{print $3}')
-          echo "Latest Emacs tag is $LATEST_TAG"
+            | tail -n 1)
+
+          LATEST_OVERALL_TAG=$(echo "$ALL_TAGS" \
+            | sort -V \
+            | tail -n 1)
+
+          LATEST_TAG=$(printf "%s\n%s" "$LATEST_STABLE_TAG" "$LATEST_OVERALL_TAG" \
+            | sort -V \
+            | tail -n 1)
+
+          echo "Latest stable tag is $LATEST_STABLE_TAG"
+          echo "Latest overall tag is $LATEST_OVERALL_TAG"
+          echo "Selected latest tag is $LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
 
       # 5. Clone the specific Emacs release tag
@@ -72,6 +85,7 @@ jobs:
                       CC="zig cc -target $TARGET" \
                       CXX="zig c++ -target $TARGET" \
                       --without-dbus \
+                      --without-ncurses \
                       --with-native-compilation=aot \
                       --with-tree-sitter \
                       --with-gif \
