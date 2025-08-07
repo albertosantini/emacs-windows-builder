@@ -22,18 +22,18 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            build-essential autoconf automake texinfo \
-            libgnutls28-dev libncurses-dev libjansson-dev \
-            libjpeg-dev libpng-dev libtiff-dev libgif-dev \
-            libxpm-dev libxml2-dev \
-            jq # Install jq for JSON parsing
+          sudo apt-get install -y \            build-essential autoconf automake texinfo \            libgnutls28-dev libncurses-dev libjansson-dev \            libjpeg-dev libpng-dev libtiff-dev libgif-dev \            libxpm-dev libxml2-dev \            xz-utils \            jq # Install jq for JSON parsing
 
-      # 3. Install Zig
-      - name: Install Zig
-        uses: mlugg/setup-zig@v1
-        with:
-          version: 'latest'
+      # 3. Install the latest version of Zig
+      - name: Install Zig (latest stable)
+        run: |
+          curl -s https://ziglang.org/download/index.json > zig-versions.json
+          LATEST_ZIG_VERSION=$(jq -r 'keys | .[]' zig-versions.json | grep -v 'master' | sort -V | tail -n 1)
+          echo "Latest Zig version is $LATEST_ZIG_VERSION"
+          TARBALL_URL=$(jq -r --arg V "$LATEST_ZIG_VERSION" '.[$V]."x86_64-linux".tarball' zig-versions.json)
+          wget "$TARBALL_URL"
+          tar -xf zig-linux-x86_64-*.tar.xz
+          echo "$(pwd)/zig-linux-x86_64-*" >> $GITHUB_PATH
 
       # 4. Determine the latest Emacs release tag
       - name: Determine Latest Emacs Tag
