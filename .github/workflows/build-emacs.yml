@@ -18,7 +18,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Install Emacs build dependencies and jq
+      # 2. Install Emacs build dependencies
       - name: Install build dependencies
         run: |
           sudo apt-get update
@@ -27,10 +27,8 @@ jobs:
             libgnutls28-dev libncurses-dev libjansson-dev \
             libjpeg-dev libpng-dev libtiff-dev libgif-dev \
             libxpm-dev libxml2-dev \
-            libtree-sitter-dev librsvg2-dev libmagickwand-dev \
-            xz-utils \
-            mingw-w64 \
-            jq # Install jq for JSON parsing
+            libtree-sitter-dev librsvg2-dev \
+            xz-utils mingw-w64
 
       # 3. Determine the latest Emacs release tag
       - name: Determine Latest Emacs Tag
@@ -80,7 +78,8 @@ jobs:
                       --with-png \
                       --with-jpeg \
                       --with-rsvg \
-                      --with-tiff
+                      --with-tiff \
+                      --without-imagemagick
           make -j$(nproc)
           make install-strip DESTDIR=../../emacs-win-dist
 
