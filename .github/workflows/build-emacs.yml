@@ -79,7 +79,7 @@ jobs:
       - name: Build Emacs
         working-directory: ./emacs
         run: |
-          export TARGET="x86_64-windows-gnu"
+          export TARGET="x86_64-w64-mingw32"
           ./autogen.sh
           ./configure --host=$TARGET \
                       CC="zig cc -target $TARGET" \
