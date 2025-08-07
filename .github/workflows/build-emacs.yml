@@ -27,7 +27,7 @@ jobs:
             libgnutls28-dev libncurses-dev libjansson-dev \
             libjpeg-dev libpng-dev libtiff-dev libgif-dev \
             libxpm-dev libxml2-dev \
-            libtree-sitter-dev librsvg2-dev \
+            libtree-sitter-dev librsvg2-dev zlib1g-dev \
             xz-utils mingw-w64
 
       # 3. Determine the latest Emacs release tag
