@@ -66,10 +66,11 @@ jobs:
         working-directory: ./emacs
         run: |
           export TARGET="x86_64-w64-mingw32"
-          export CPPFLAGS="-I/usr/x86_64-w64-mingw32/include -I/usr/x86_64-w64-mingw32/include/zlib"
-          export LDFLAGS="-L/usr/x86_64-w64-mingw32/lib -lz"
+          export PATH="/usr/x86_64-w64-mingw32/bin:$PATH"
+          export AR="x86_64-w64-mingw32-ar"
+          export RANLIB="x86_64-w64-mingw32-ranlib"
           ./autogen.sh
-          ./configure --host=$TARGET \
+          ./configure --build=x86_64-pc-linux-gnu --host=$TARGET --target=$TARGET \
                       CC="x86_64-w64-mingw32-gcc" \
                       CXX="x86_64-w64-mingw32-g++" \
                       --without-dbus \
