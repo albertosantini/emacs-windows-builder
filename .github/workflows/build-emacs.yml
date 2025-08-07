@@ -87,6 +87,13 @@ jobs:
                       --without-imagemagick
           make -j$(nproc)
           make install-strip DESTDIR=../../emacs-win-dist
+        if: always()
+        run: |
+          if [ -f "config.log" ]; then
+            echo "--- config.log content ---"
+            cat config.log
+            echo "--------------------------"
+          fi
 
       # 6. Package the build into a versioned zip file
       - name: Package the build
