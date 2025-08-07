@@ -26,7 +26,9 @@ jobs:
             build-essential autoconf automake texinfo \
             libgnutls28-dev libncurses-dev libjansson-dev \
             libjpeg-dev libpng-dev libtiff-dev libgif-dev \
-            libxpm-dev libxml2-dev xz-utils \
+            libxpm-dev libxml2-dev \
+            libtree-sitter-dev librsvg2-dev libmagickwand-dev \
+            xz-utils \
             jq # Install jq for JSON parsing
 
       # 3. Install the latest version of Zig
@@ -47,7 +49,8 @@ jobs:
         id: get_tag
         run: |
           LATEST_TAG=$(git ls-remote --tags --ref git://git.savannah.gnu.org/emacs.git \
-            | grep -v -E '\.([5-9][0-9]|[1-9][0-9]{2,})
+            | grep -E 'refs/tags/emacs-[0-9]+\.[0-9]+(\.[0-9]+)?$' \
+            | grep -v -E '\.([5-9][0-9]|[1-9][0-9]{2,})$' \
             | sort -V \
             | tail -n 1 \
             | awk -F/ '{print $3}')
@@ -69,9 +72,16 @@ jobs:
                       CC="zig cc -target $TARGET" \
                       CXX="zig c++ -target $TARGET" \
                       --without-dbus \
-                      --with-native-compilation=aot
+                      --with-native-compilation=aot \
+                      --with-tree-sitter \
+                      --with-gif \
+                      --with-png \
+                      --with-jpeg \
+                      --with-rsvg \
+                      --with-tiff \
+                      --with-imagemagick
           make -j$(nproc)
-          make install-strip DESTDIR=../emacs-win-dist
+          make install-strip DESTDIR=../../emacs-win-dist
 
       # 7. Package the build into a versioned zip file
       - name: Package the build
