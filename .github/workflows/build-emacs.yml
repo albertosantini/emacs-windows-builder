@@ -37,8 +37,10 @@ jobs:
           echo "Latest Zig version is $LATEST_ZIG_VERSION"
           TARBALL_URL=$(jq -r --arg V "$LATEST_ZIG_VERSION" '.[$V]."x86_64-linux".tarball' zig-versions.json)
           wget "$TARBALL_URL"
-          tar -xf zig-linux-x86_64-*.tar.xz
-          echo "$(pwd)/zig-linux-x86_64-*" >> $GITHUB_PATH
+          TARBALL_NAME=$(basename "$TARBALL_URL")
+          tar -xf "$TARBALL_NAME"
+          EXTRACTED_DIR_NAME=$(basename "$TARBALL_NAME" .tar.xz)
+          echo "$(pwd)/$EXTRACTED_DIR_NAME" >> $GITHUB_PATH
 
       # 4. Determine the latest Emacs release tag
       - name: Determine Latest Emacs Tag
