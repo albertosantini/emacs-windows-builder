@@ -74,14 +74,18 @@ jobs:
       # 7. Package the build into a versioned zip file
       - name: Package the build
         run: |
-          # The zip file will now have the version in its name, e.g., emacs-windows-emacs-29.3.zip
           zip -r emacs-windows-${{ env.LATEST_TAG }}.zip ./emacs-win-dist
 
       # 8. Upload the versioned build artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          # The artifact name for the download page
           name: emacs-windows-build-${{ env.LATEST_TAG }}
-          # The path to the actual file to be uploaded, which is now also versioned
           path: emacs-windows-${{ env.LATEST_TAG }}.zip
+
+      # 9. Clean up old artifacts to stay within storage limits
+      - name: Clean up old artifacts
+        uses: c-hive/gha-remove-artifacts@v1
+        with:
+          # Keep only the 2 most recent artifacts
+          skip-recent: 2
