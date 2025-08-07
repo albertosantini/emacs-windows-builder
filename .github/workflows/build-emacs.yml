@@ -29,16 +29,11 @@ jobs:
             libxpm-dev libxml2-dev \
             jq # Install jq for JSON parsing
 
-      # 3. Install the latest version of Zig
-      - name: Install Zig (latest stable)
-        run: |
-          curl -s https://ziglang.org/download/index.json > zig-versions.json
-          LATEST_ZIG_VERSION=$(jq -r 'keys | .[]' zig-versions.json | grep -v 'master' | sort -V | tail -n 1)
-          echo "Latest Zig version is $LATEST_ZIG_VERSION"
-          TARBALL_URL=$(jq -r --arg V "$LATEST_ZIG_VERSION" '.[$V]."x86_64-linux".tarball' zig-versions.json)
-          wget "$TARBALL_URL"
-          tar -xf zig-linux-x86_64-*.tar.xz
-          echo "$(pwd)/zig-linux-x86_64-*" >> $GITHUB_PATH
+      # 3. Install Zig
+      - name: Install Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 'latest'
 
       # 4. Determine the latest Emacs release tag
       - name: Determine Latest Emacs Tag
