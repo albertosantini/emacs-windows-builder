@@ -36,6 +36,7 @@ jobs:
             mingw-w64-x86_64-libpng
             mingw-w64-x86_64-librsvg
             mingw-w64-x86_64-libtiff
+            mingw-w64-x86_64-libtree-sitter
             mingw-w64-x86_64-libwebp
             mingw-w64-x86_64-libxml2
             mingw-w64-x86_64-make
