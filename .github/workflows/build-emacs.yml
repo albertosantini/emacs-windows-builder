@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest # Usa runner Windows
+    runs-on: windows-latest # Windows runner for building Emacs
 
     steps:
       - name: Checkout repository
@@ -24,82 +24,49 @@ jobs:
           install: >-
             base-devel
             git
+            python
             zip
-            mingw-w64-x86_64-autotools
-            mingw-w64-x86_64-giflib
-            mingw-w64-x86_64-gmp
-            mingw-w64-x86_64-gnutls
-            mingw-w64-x86_64-harfbuzz
-            mingw-w64-x86_64-jansson
-            mingw-w64-x86_64-lcms2
-            mingw-w64-x86_64-libgccjit
-            mingw-w64-x86_64-libjpeg-turbo
-            mingw-w64-x86_64-libpng
-            mingw-w64-x86_64-librsvg
-            mingw-w64-x86_64-libtiff
-            mingw-w64-x86_64-libtree-sitter
-            mingw-w64-x86_64-libwebp
-            mingw-w64-x86_64-libxml2
-            mingw-w64-x86_64-make
-            mingw-w64-x86_64-pkg-config
-            mingw-w64-x86_64-sqlite3
-            mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-tree-sitter
-            mingw-w64-x86_64-xpm-nox
-            mingw-w64-x86_64-zlib
+
+      - name: Setup build environment
+        shell: msys2 {0}
+        run: |
+          mkdir -p ~/emacs-build/git ~/emacs-build/deps ~/emacs-upload
+          git clone --depth 1 --branch master git://git.savannah.gnu.org/emacs.git ~/emacs-build/git/master
 
       - name: Determine Latest Emacs Tag
         shell: msys2 {0}
         run: |
-          ALL_TAGS=$(git ls-remote --tags --ref git://git.savannah.gnu.org/emacs.git | grep -o 'refs/tags/emacs-[0-9.]*$' | sed 's|refs/tags/||')
-          LATEST_STABLE_TAG=$(echo "$ALL_TAGS" | grep -v -E '\.([5-9][0-9]|[1-9][0-9]{2,})$' | sort -V | tail -n 1)
+          ALL_TAGS=$(git ls-remote --tags --ref git://git.savannah.gnu.org/emacs.git | grep -o 'refs/tags/emacs-[0-9.]* | sed 's|refs/tags/||')
+          LATEST_STABLE_TAG=$(echo "$ALL_TAGS" | grep -v -E '\.([5-9][0-9]|[1-9][0-9]{2,}) | sort -V | tail -n 1)
           LATEST_OVERALL_TAG=$(echo "$ALL_TAGS" | sort -V | tail -n 1)
           LATEST_TAG=$(printf "%s\n%s" "$LATEST_STABLE_TAG" "$LATEST_OVERALL_TAG" | sort -V | tail -n 1)
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          echo "EMACS_MAJOR_VERSION=$(echo $LATEST_TAG | cut -d'.' -f1 | sed 's/emacs-//')" >> $GITHUB_ENV
 
-      - name: Clone Emacs source (latest tag)
+      - name: Create Git worktree for the release
         shell: msys2 {0}
         run: |
-          git clone --depth 1 --branch ${{ env.LATEST_TAG }} git://git.savannah.gnu.org/emacs.git
+          cd ~/emacs-build/git/master
+          git worktree add ../emacs-${{ env.LATEST_TAG }} ${{ env.LATEST_TAG }}
 
-      - name: Build Emacs
+      - name: Build dependencies
         shell: msys2 {0}
         run: |
-          cd emacs
-          ./autogen.sh
-          ./configure --prefix=/c/emacs-dist \
-            --with-native-compilation=aot \
-            --with-tree-sitter \
-            --without-dbus
-          make -j$(nproc)
-          make install-strip
+          cd ~/emacs-build/deps
+          python3 ~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
 
-      - name: Show config logs
-        if: always()
+      - name: Build Emacs and create packages
         shell: msys2 {0}
         run: |
-          cd emacs
-          if [ -f "config.log" ]; then
-            echo "--- config.log content ---"
-            cat config.log
-            echo "--------------------------"
-          fi
+          cd ~/emacs-build/git/emacs-${{ env.LATEST_TAG }}/admin/nt/dist-build
+          ./build-zips.sh
 
-      # 7. Package the build into a versioned zip file
-      - name: Package the build
-        shell: msys2 {0}
-        run: |
-          cd /c
-          zip -r emacs-windows-${{ env.LATEST_TAG }}.zip emacs-dist
-
-      # 8. Upload the versioned build artifact
-      - name: Upload artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: emacs-windows-build-${{ env.LATEST_TAG }}
-          path: C:/emacs-windows-${{ env.LATEST_TAG }}.zip
+          name: emacs-windows-dist-${{ env.LATEST_TAG }}
+          path: ~/emacs-upload/*
 
-      # 9. Clean up old artifacts to stay within storage limits
       - name: Clean up old artifacts
         uses: c-hive/gha-remove-artifacts@v1
         with:
