@@ -107,4 +107,3 @@ jobs:
         with:
           # Keep only the 2 most recent artifacts
           skip-recent: 2
-          skip-recent: 2
