@@ -24,6 +24,7 @@ jobs:
           install: >-
             base-devel
             git
+            zip
             mingw-w64-x86_64-autotools
             mingw-w64-x86_64-giflib
             mingw-w64-x86_64-gmp
@@ -46,7 +47,6 @@ jobs:
             mingw-w64-x86_64-tree-sitter
             mingw-w64-x86_64-xpm-nox
             mingw-w64-x86_64-zlib
-            mingw-w64-x86_64-zip
 
       - name: Determine Latest Emacs Tag
         shell: msys2 {0}
