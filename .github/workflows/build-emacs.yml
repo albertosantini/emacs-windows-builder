@@ -43,10 +43,6 @@ jobs:
             mingw-w64 \
             pkg-config \
             libz-mingw-w64-dev \
-            libpng-mingw-w64-dev \
-            libjpeg-mingw-w64-dev \
-            libtiff-mingw-w64-dev \
-            libgif-mingw-w64-dev \
             librsvg2-bin
 
       # Diagnostic: Show cross-compiler version
