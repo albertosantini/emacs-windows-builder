@@ -96,7 +96,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: emacs-windows-build-${{ env.LATEST_TAG }}
-          path: C:\emacs-windows-${{ env.LATEST_TAG }}.zip
+          path: /c/emacs-windows-${{ env.LATEST_TAG }}.zip
 
       # 9. Clean up old artifacts to stay within storage limits
       - name: Clean up old artifacts
