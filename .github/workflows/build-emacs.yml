@@ -31,7 +31,7 @@ jobs:
         shell: msys2 {0}
         run: |
           mkdir -p ~/emacs-build/git ~/emacs-build/deps ~/emacs-upload
-          git clone --depth 1 --branch master git://git.savannah.gnu.org/emacs.git ~/emacs-build/git/master
+          git clone --branch master git://git.savannah.gnu.org/emacs.git ~/emacs-build/git/master
 
       - name: Determine Latest Emacs Tag
         shell: msys2 {0}
