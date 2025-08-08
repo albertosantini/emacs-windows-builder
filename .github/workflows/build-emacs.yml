@@ -81,7 +81,7 @@ jobs:
       - name: Show config logs
         if: always()
         working-directory: emacs
-        shell: bash
+        shell: msys2 {0}
         run: |
           if [ -f "config.log" ]; then
             echo "--- config.log content ---"
@@ -91,16 +91,16 @@ jobs:
 
       # 7. Package the build into a versioned zip file
       - name: Package the build
-        shell: bash
+        shell: msys2 {0}
         run: |
-          zip -r emacs-windows-${{ env.LATEST_TAG }}.zip ./emacs-win-dist
+          zip -r emacs-windows-${{ env.LATEST_TAG }}.zip /c/emacs-dist
 
       # 8. Upload the versioned build artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: emacs-windows-build-${{ env.LATEST_TAG }}
-          path: emacs-windows-${{ env.LATEST_TAG }}.zip
+          path: C:\emacs-windows-${{ env.LATEST_TAG }}.zip
 
       # 9. Clean up old artifacts to stay within storage limits
       - name: Clean up old artifacts
