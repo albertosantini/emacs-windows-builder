@@ -34,7 +34,6 @@ jobs:
             mingw-w64-x86_64-libpng
             mingw-w64-x86_64-libjpeg-turbo
             mingw-w64-x86_64-librsvg
-            mingw-w64-x86_64-libxpm
             mingw-w64-x86_64-tree-sitter
             mingw-w64-x86_64-zlib
             mingw-w64-x86_64-giflib
@@ -72,7 +71,7 @@ jobs:
             --with-gnutls \
             --with-xml2 \
             --with-jansson \
-            --with-xpm \
+            --without-xpm \
             --without-imagemagick
           make -j$(nproc)
           make install-strip
