@@ -24,6 +24,7 @@ jobs:
           install: >-
             base-devel
             git
+            mingw-w64-x86_64-ntldd
             python
             zip
 
