@@ -99,7 +99,7 @@ jobs:
                       --disable-dependency-tracking \
                       --without-dbus \
                       --without-ncurses \
-                      --with-native-compilation=aot \
+                      --without-native-compilation \
                       --with-tree-sitter \
                       --with-gif \
                       --with-png \
