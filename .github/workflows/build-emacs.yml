@@ -89,7 +89,7 @@ jobs:
       - name: Package the build
         shell: msys2 {0}
         run: |
-          zip -r emacs-windows-${{ env.LATEST_TAG }}.zip /c/emacs-dist
+          zip -r /c/emacs-windows-${{ env.LATEST_TAG }}.zip /c/emacs-dist
 
       # 8. Upload the versioned build artifact
       - name: Upload artifact
