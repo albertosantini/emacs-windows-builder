@@ -88,7 +88,7 @@ jobs:
 
       # 5. Build Emacs
       - name: Build Emacs
-        working-directory: ./emacs
+        working-directory: emacs
         shell: bash
         run: |
           export TARGET="x86_64-w64-mingw32"
@@ -114,9 +114,10 @@ jobs:
           make -j$(nproc)
           make install-strip DESTDIR=../emacs-win-dist
 
+      # 6. Diagnostic: Show the content of config.log
       - name: Show config logs
         if: always()
-        working-directory: ./emacs
+        working-directory: emacs
         shell: bash
         run: |
           if [ -f "config.log" ]; then
@@ -125,20 +126,20 @@ jobs:
             echo "--------------------------"
           fi
 
-      # 6. Package the build into a versioned zip file
+      # 7. Package the build into a versioned zip file
       - name: Package the build
         shell: bash
         run: |
           zip -r emacs-windows-${{ env.LATEST_TAG }}.zip ./emacs-win-dist
 
-      # 7. Upload the versioned build artifact
+      # 8. Upload the versioned build artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: emacs-windows-build-${{ env.LATEST_TAG }}
           path: emacs-windows-${{ env.LATEST_TAG }}.zip
 
-      # 8. Clean up old artifacts to stay within storage limits
+      # 9. Clean up old artifacts to stay within storage limits
       - name: Clean up old artifacts
         uses: c-hive/gha-remove-artifacts@v1
         with:
