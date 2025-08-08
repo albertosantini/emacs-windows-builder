@@ -55,6 +55,8 @@ jobs:
         run: |
           cd ~/emacs-build/deps
           python3 ~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
+        env:
+          MSYSTEM: MSYS
 
       - name: Build Emacs and create packages
         shell: msys2 {0}
