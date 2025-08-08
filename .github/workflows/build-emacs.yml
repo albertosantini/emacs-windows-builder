@@ -87,8 +87,8 @@ jobs:
           sed -i '/"mingw-w64-x86_64-libwinpthread":"mingw-w64-x86_64-libwinpthread-git",/d' "$SCRIPT"
           # Remove incorrect mapping for libtre
           sed -i '/"mingw-w64-x86_64-libtre": "mingw-w64-x86_64-libtre-git",/d' "$SCRIPT"
-          # Add correct source extension for jansson
-          sed -i '/SRC_EXT={/a "mingw-w64-jansson": ".src.tar.zst",' "$SCRIPT"
+          # Change default source extension to .zst
+          sed -i 's/src_ext = ".src.tar.gz"/src_ext = ".src.tar.zst"/' "$SCRIPT"
 
       - name: Build dependencies
         shell: msys2 {0}
