@@ -23,12 +23,31 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential autoconf automake texinfo \
-            libgnutls28-dev libncurses-dev libjansson-dev \
-            libjpeg-dev libpng-dev libtiff-dev libgif-dev \
-            libxpm-dev libxml2-dev \
-            libtree-sitter-dev librsvg2-dev zlib1g-dev \
-            xz-utils mingw-w64 pkg-config
+            build-essential \
+            autoconf \
+            automake \
+            texinfo \
+            libgnutls28-dev \
+            libncurses-dev \
+            libjansson-dev \
+            libjpeg-dev \
+            libpng-dev \
+            libtiff-dev \
+            libgif-dev \
+            libxpm-dev \
+            libxml2-dev \
+            libtree-sitter-dev \
+            librsvg2-dev \
+            zlib1g-dev \
+            xz-utils \
+            mingw-w64 \
+            pkg-config \
+            libz-mingw-w64-dev \
+            libpng-mingw-w64-dev \
+            libjpeg-mingw-w64-dev \
+            libtiff-mingw-w64-dev \
+            libgif-mingw-w64-dev \
+            librsvg2-bin
 
       # Diagnostic: Show cross-compiler version
       - name: Show cross-compiler version
