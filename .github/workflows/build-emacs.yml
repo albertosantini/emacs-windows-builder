@@ -58,8 +58,8 @@ jobs:
 
       - name: Build Emacs
         shell: msys2 {0}
-        working-directory: emacs
         run: |
+          cd emacs
           ./autogen.sh
           ./configure --prefix=/c/emacs-dist \
             --with-native-compilation=aot \
@@ -77,12 +77,11 @@ jobs:
           make -j$(nproc)
           make install-strip
 
-      # 6. Diagnostic: Show the content of config.log
       - name: Show config logs
         if: always()
-        working-directory: emacs
         shell: msys2 {0}
         run: |
+          cd emacs
           if [ -f "config.log" ]; then
             echo "--- config.log content ---"
             cat config.log
@@ -107,4 +106,5 @@ jobs:
         uses: c-hive/gha-remove-artifacts@v1
         with:
           # Keep only the 2 most recent artifacts
+          skip-recent: 2
           skip-recent: 2
