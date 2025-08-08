@@ -72,6 +72,11 @@ jobs:
           cd ~/emacs-build/git/master
           git worktree add ../emacs-${{ env.LATEST_TAG }} ${{ env.LATEST_TAG }}
 
+      - name: Find tree-sitter DLL
+        shell: msys2 {0}
+        run: |
+          ls -l /mingw64/bin | grep tree-sitter
+
       - name: Build dependencies
         shell: msys2 {0}
         run: |
