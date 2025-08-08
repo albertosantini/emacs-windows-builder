@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest # Usa runner Windows invece di Ubuntu
+    runs-on: windows-latest # Usa runner Windows
 
     steps:
       - name: Checkout repository
@@ -25,21 +25,22 @@ jobs:
             base-devel
             git
             mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-libgccjit
+            mingw-w64-x86_64-xpm-nox
+            mingw-w64-x86_64-gmp
             mingw-w64-x86_64-gnutls
-            mingw-w64-x86_64-jansson
-            mingw-w64-x86_64-libxml2
             mingw-w64-x86_64-libtiff
+            mingw-w64-x86_64-giflib
             mingw-w64-x86_64-libpng
             mingw-w64-x86_64-libjpeg-turbo
             mingw-w64-x86_64-librsvg
-            mingw-w64-x86_64-tree-sitter
+            mingw-w64-x86_64-libwebp
+            mingw-w64-x86_64-lcms2
+            mingw-w64-x86_64-libxml2
             mingw-w64-x86_64-zlib
-            mingw-w64-x86_64-giflib
-            mingw-w64-x86_64-pkg-config
-            mingw-w64-x86_64-make
-            mingw-w64-x86_64-autotools
+            mingw-w64-x86_64-harfbuzz
+            mingw-w64-x86_64-libgccjit
+            mingw-w64-x86_64-sqlite3
+            mingw-w64-x86_64-libtree-sitter
 
       - name: Determine Latest Emacs Tag
         shell: msys2 {0}
@@ -63,16 +64,7 @@ jobs:
           ./configure --prefix=/c/emacs-dist \
             --with-native-compilation=aot \
             --with-tree-sitter \
-            --with-gif \
-            --with-png \
-            --with-jpeg \
-            --with-rsvg \
-            --with-tiff \
-            --with-gnutls \
-            --with-xml2 \
-            --with-jansson \
-            --without-xpm \
-            --without-imagemagick
+            --without-dbus
           make -j$(nproc)
           make install-strip
 
