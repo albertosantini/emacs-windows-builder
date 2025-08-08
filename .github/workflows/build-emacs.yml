@@ -77,6 +77,13 @@ jobs:
         run: |
           ln -s /mingw64/bin/libtree-sitter-0.25.dll /mingw64/bin/libtree-sitter.dll
 
+      - name: Patch build script for cc-libs
+        shell: msys2 {0}
+        run: |
+          sed -i '/"mingw-w64-x86_64-libtre": "mingw-w64-x86_64-libtre-git",/a \
+          "mingw-w64-x86_64-cc-libs": "mingw-w64-x86_64-gcc-libs",'
+          ~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
+
       - name: Build dependencies
         shell: msys2 {0}
         run: |
