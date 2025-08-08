@@ -28,7 +28,13 @@ jobs:
             libjpeg-dev libpng-dev libtiff-dev libgif-dev \
             libxpm-dev libxml2-dev \
             libtree-sitter-dev librsvg2-dev zlib1g-dev \
-            xz-utils mingw-w64
+            xz-utils mingw-w64 pkg-config
+
+      # Diagnostic: Show cross-compiler version
+      - name: Show cross-compiler version
+        run: |
+          x86_64-w64-mingw32-gcc --version
+          which x86_64-w64-mingw32-gcc
 
       # 3. Determine the latest Emacs release tag
       - name: Determine Latest Emacs Tag
@@ -64,9 +70,9 @@ jobs:
       # 5. Build Emacs
       - name: Build Emacs
         working-directory: ./emacs
+        shell: bash
         run: |
           export TARGET="x86_64-w64-mingw32"
-          export PATH="/usr/x86_64-w64-mingw32/bin:$PATH"
           export AR="x86_64-w64-mingw32-ar"
           export RANLIB="x86_64-w64-mingw32-ranlib"
           export CPPFLAGS="-I/usr/x86_64-w64-mingw32/include -I/usr/x86_64-w64-mingw32/include/zlib"
@@ -75,6 +81,7 @@ jobs:
           ./configure --build=x86_64-pc-linux-gnu --host=$TARGET --target=$TARGET \
                       CC="x86_64-w64-mingw32-gcc" \
                       CXX="x86_64-w64-mingw32-g++" \
+                      --disable-dependency-tracking \
                       --without-dbus \
                       --without-ncurses \
                       --with-native-compilation=aot \
@@ -86,8 +93,12 @@ jobs:
                       --with-tiff \
                       --without-imagemagick
           make -j$(nproc)
-          make install-strip DESTDIR=../../emacs-win-dist
+          make install-strip DESTDIR=../emacs-win-dist
+
       - name: Show config logs
+        if: always()
+        working-directory: ./emacs
+        shell: bash
         run: |
           if [ -f "config.log" ]; then
             echo "--- config.log content ---"
@@ -97,6 +108,7 @@ jobs:
 
       # 6. Package the build into a versioned zip file
       - name: Package the build
+        shell: bash
         run: |
           zip -r emacs-windows-${{ env.LATEST_TAG }}.zip ./emacs-win-dist
 
