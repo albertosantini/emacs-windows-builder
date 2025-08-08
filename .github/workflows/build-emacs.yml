@@ -82,9 +82,11 @@ jobs:
         run: |
           SCRIPT=~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
           # Add mapping for cc-libs -> gcc-libs
-          sed -i 's/"mingw-w64-x86_64-libtre": "mingw-w64-x86_64-libtre-git",/"mingw-w64-x86_64-libtre": "mingw-w64-x86_64-libtre-git",\n"mingw-w64-x86_64-cc-libs": "mingw-w64-x86_64-gcc-libs",/' "$SCRIPT"
+          sed -i '/MUNGE_DEP_PKGS={/a "mingw-w64-x86_64-cc-libs": "mingw-w64-x86_64-gcc-libs",' "$SCRIPT"
           # Remove incorrect mapping for libwinpthread
           sed -i '/"mingw-w64-x86_64-libwinpthread":"mingw-w64-x86_64-libwinpthread-git",/d' "$SCRIPT"
+          # Remove incorrect mapping for libtre
+          sed -i '/"mingw-w64-x86_64-libtre": "mingw-w64-x86_64-libtre-git",/d' "$SCRIPT"
 
       - name: Build dependencies
         shell: msys2 {0}
