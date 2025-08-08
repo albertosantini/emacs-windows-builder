@@ -89,7 +89,7 @@ jobs:
       - name: Package the build
         shell: msys2 {0}
         run: |
-          cd /
+          cd /c
           zip -r emacs-windows-${{ env.LATEST_TAG }}.zip emacs-dist
 
       # 8. Upload the versioned build artifact
@@ -97,7 +97,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: emacs-windows-build-${{ env.LATEST_TAG }}
-          path: /emacs-windows-${{ env.LATEST_TAG }}.zip
+          path: C:/emacs-windows-${{ env.LATEST_TAG }}.zip
 
       # 9. Clean up old artifacts to stay within storage limits
       - name: Clean up old artifacts
