@@ -80,13 +80,16 @@ jobs:
       - name: Patch build scripts
         shell: msys2 {0}
         run: |
-          SCRIPT=~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
-          sed -i '/MUNGE_DEP_PKGS={/a "mingw-w64-x86_64-cc-libs": "mingw-w64-x86_64-gcc-libs",' "$SCRIPT"
-          sed -i 's/libwinpthread-git/libwinpthread/g' "$SCRIPT"
-          sed -i 's/mingw-w64-winpthreads-git/mingw-w64-winpthreads/g' "$SCRIPT"
-          sed -i 's/libtre-git/libtre/g' "$SCRIPT"
-          sed -i '/"mingw-w64-xz": ".src.tar.zst",/a "mingw-w64-lzo2": ".src.tar.gz",' "$SCRIPT"
-          sed -i 's/src_ext = ".src.tar.gz"/src_ext = ".src.tar.zst"/' "$SCRIPT"
+          SCRIPT_PY=~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
+          sed -i '/MUNGE_DEP_PKGS={/a "mingw-w64-x86_64-cc-libs": "mingw-w64-x86_64-gcc-libs",' "$SCRIPT_PY"
+          sed -i 's/libwinpthread-git/libwinpthread/g' "$SCRIPT_PY"
+          sed -i 's/mingw-w64-winpthreads-git/mingw-w64-winpthreads/g' "$SCRIPT_PY"
+          sed -i 's/libtre-git/libtre/g' "$SCRIPT_PY"
+          sed -i '/"mingw-w64-xz": ".src.tar.zst",/a "mingw-w64-lzo2": ".src.tar.gz",' "$SCRIPT_PY"
+          sed -i 's/src_ext = ".src.tar.gz"/src_ext = ".src.tar.zst"/' "$SCRIPT_PY"
+
+          SCRIPT_SH=~/emacs-build/git/emacs-${{ env.LATEST_TAG }}/admin/nt/dist-build/build-zips.sh
+          sed -i 's|REPO_DIR=$HOME/emacs-build/git/|REPO_DIR=$HOME/emacs-build/git|' "$SCRIPT_SH"
 
       - name: Show patched script
         shell: msys2 {0}
