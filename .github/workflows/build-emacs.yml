@@ -77,18 +77,16 @@ jobs:
         run: |
           ln -s /mingw64/bin/libtree-sitter-0.25.dll /mingw64/bin/libtree-sitter.dll
 
+mingw-w64-x86_64-libwinpthread-git
+
       - name: Patch build scripts
         shell: msys2 {0}
         run: |
           SCRIPT=~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
-          # Add mapping for cc-libs -> gcc-libs
           sed -i '/MUNGE_DEP_PKGS={/a "mingw-w64-x86_64-cc-libs": "mingw-w64-x86_64-gcc-libs",' "$SCRIPT"
-          # Remove incorrect mapping for libtre
-          sed -i '/"mingw-w64-x86_64-libtre": "mingw-w64-x86_64-libtre-git",/d' "$SCRIPT"
-          # Change default source extension to .zst
+          sed -i 's/libwinpthread-git/libwinpthread/g' "$SCRIPT"
+          sed -i 's/libtre-git/libtre/g' "$SCRIPT"
           sed -i 's/src_ext = ".src.tar.gz"/src_ext = ".src.tar.zst"/' "$SCRIPT"
-          # Correct the source extension for libwinpthread
-          sed -i 's/"mingw-w64-winpthreads-git": ".src.tar.zst"/"mingw-w64-winpthreads-git": ".src.tar.gz"/' "$SCRIPT"
 
       - name: Build dependencies
         shell: msys2 {0}
