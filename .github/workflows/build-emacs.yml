@@ -85,7 +85,6 @@ jobs:
           sed -i 's/libwinpthread-git/libwinpthread/g' "$SCRIPT"
           sed -i 's/mingw-w64-winpthreads-git/mingw-w64-winpthreads/g' "$SCRIPT"
           sed -i 's/libtre-git/libtre/g' "$SCRIPT"
-          sed -i 's/src_ext = ".src.tar.gz"/src_ext = ".src.tar.zst"/' "$SCRIPT"
 
       - name: Show patched script
         shell: msys2 {0}
