@@ -77,8 +77,6 @@ jobs:
         run: |
           ln -s /mingw64/bin/libtree-sitter-0.25.dll /mingw64/bin/libtree-sitter.dll
 
-mingw-w64-x86_64-libwinpthread-git
-
       - name: Patch build scripts
         shell: msys2 {0}
         run: |
