@@ -112,7 +112,7 @@ jobs:
         shell: msys2 {0}
         run: |
           cd ~/emacs-build/git/emacs-${{ env.LATEST_TAG }}/admin/nt/dist-build
-          GIT_UP=1 ./build-zips.sh
+          ./build-zips.sh -g
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
