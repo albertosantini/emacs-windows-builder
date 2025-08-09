@@ -85,7 +85,7 @@ jobs:
           sed -i 's/libwinpthread-git/libwinpthread/g' "$SCRIPT"
           sed -i 's/libtre-git/libtre/g' "$SCRIPT"
           sed -i 's/src_ext = ".src.tar.gz"/src_ext = ".src.tar.zst"/' "$SCRIPT"
-          sed -i 's/"mingw-w64-winpthreads-git": ".src.tar.zst"/"mingw-w64-winpthreads-git": ".src.tar.gz"/' "$SCRIPT"
+          sed -i 's/"mingw-w64-winpthreads-git": ".src.tar.zst"/"mingw-w64-winpthreads": ".src.tar.gz"/' "$SCRIPT"
 
       - name: Build dependencies
         shell: msys2 {0}
