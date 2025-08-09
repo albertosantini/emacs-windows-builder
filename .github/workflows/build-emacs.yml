@@ -87,6 +87,11 @@ jobs:
           sed -i 's/src_ext = ".src.tar.gz"/src_ext = ".src.tar.zst"/' "$SCRIPT"
           sed -i 's/"mingw-w64-winpthreads-git": ".src.tar.zst"/"mingw-w64-winpthreads": ".src.tar.zst"/' "$SCRIPT"
 
+      - name: Show patched script
+        shell: msys2 {0}
+        run: |
+          cat ~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
+
       - name: Build dependencies
         shell: msys2 {0}
         run: |
