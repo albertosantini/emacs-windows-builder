@@ -83,9 +83,9 @@ jobs:
           SCRIPT=~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
           sed -i '/MUNGE_DEP_PKGS={/a "mingw-w64-x86_64-cc-libs": "mingw-w64-x86_64-gcc-libs",' "$SCRIPT"
           sed -i 's/libwinpthread-git/libwinpthread/g' "$SCRIPT"
+          sed -i 's/mingw-w64-winpthreads-git/mingw-w64-winpthreads/g' "$SCRIPT"
           sed -i 's/libtre-git/libtre/g' "$SCRIPT"
           sed -i 's/src_ext = ".src.tar.gz"/src_ext = ".src.tar.zst"/' "$SCRIPT"
-          sed -i 's/"mingw-w64-winpthreads-git": ".src.tar.zst"/"mingw-w64-winpthreads": ".src.tar.zst"/' "$SCRIPT"
 
       - name: Show patched script
         shell: msys2 {0}
