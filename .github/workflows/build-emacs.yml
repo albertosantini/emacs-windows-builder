@@ -103,16 +103,23 @@ jobs:
           python3 ~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
         env:
           MSYSTEM: MSYS
+
       - name: Display directory tree
         shell: msys2 {0}
         run: |
           find /home/runneradmin/ -type d
 
-      - name: Build Emacs and create packages
+      - name: Build Emacs release
+        shell: msys2 {0}
+        run: |
+          cd ~/emacs-build/git/master/admin/nt/dist-build
+          ./build-zips.sh -g
+
+      - name: Build Emacs snapshot
         shell: msys2 {0}
         run: |
           cd ~/emacs-build/git/emacs-${{ env.LATEST_TAG }}/admin/nt/dist-build
-          ./build-zips.sh -g
+          ./build-zips.sh -s
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
