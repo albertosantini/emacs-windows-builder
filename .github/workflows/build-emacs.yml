@@ -103,6 +103,10 @@ jobs:
           python3 ~/emacs-build/git/master/admin/nt/dist-build/build-dep-zips.py
         env:
           MSYSTEM: MSYS
+      - name: Display directory tree
+        shell: msys2 {0}
+        run: |
+          find /home/runneradmin/ -type d
 
       - name: Build Emacs and create packages
         shell: msys2 {0}
