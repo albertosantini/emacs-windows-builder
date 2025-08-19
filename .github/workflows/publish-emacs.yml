@@ -5,7 +5,7 @@ jobs:
   publish:
     runs-on: windows-latest
     steps:
-      - name: Get latest Emacs version and download installer
+      - name: Get latest Emacs version
         id: get_version
         shell: pwsh
         run: |
@@ -17,17 +17,7 @@ jobs:
           $version = ($latest_installer_name -split '-')[-2]
           echo "URL=$url" >> $env:GITHUB_ENV
           echo "VERSION=$version" >> $env:GITHUB_ENV
-          echo "INSTALLER_NAME=$latest_installer_name" >> $env:GITHUB_ENV
           echo "Complete URL: $url"
-          curl.exe -L "$url" -o "$latest_installer_name"
-
-      - name: Calculate Installer Hash
-        id: calculate_hash
-        shell: pwsh
-        run: |
-          $hash = (Get-FileHash -Path "${{ env.INSTALLER_NAME }}" -Algorithm SHA256).Hash
-          echo "INSTALLER_HASH=$hash" >> $env:GITHUB_ENV
-          echo "Installer SHA256 Hash: $hash"
 
       - name: Download winget-create CLI
         shell: pwsh
@@ -36,14 +26,8 @@ jobs:
           curl.exe -L "https://github.com/microsoft/winget-create/releases/download/v1.10.3.0/$wingetCreateExe" -o "$wingetCreateExe"
           echo "$PWD" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Verify winget-create Download and PATH
-        shell: pwsh
-        run: |
-          Get-ChildItem -Path $PWD
-          echo "PATH: $env:PATH"
-
       - name: Create winget manifest
-        run: '& "$PWD\wingetcreate.exe" update "GNU.Emacs" --urls "${{ env.URL }}" --version "${{ env.VERSION }}" --out .\manifests'
+        run: '& "$PWD\wingetcreate.exe" update "GNU.Emacs" --urls "${{ env.URL }}" --version "${{ env.VERSION }}" --architecture x64 --out .\manifests'
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
