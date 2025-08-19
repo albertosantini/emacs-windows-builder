@@ -48,6 +48,7 @@ jobs:
           git commit -m "Update GNU.Emacs to ${{ env.VERSION }}"
           git push origin $branchName
 
+          gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
           gh pr create --repo "microsoft/winget-pkgs" --base "master" --head "${{ github.actor }}:$branchName" --title "[New Package] GNU.Emacs ${{ env.VERSION }}" --body "This PR updates GNU.Emacs to version ${{ env.VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
