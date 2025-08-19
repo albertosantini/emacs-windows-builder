@@ -19,13 +19,16 @@ jobs:
           echo "VERSION=$version" >> $env:GITHUB_ENV
           echo "Complete URL: $url"
 
-      - name: Update WinGet package
-        uses: michidk/winget-updater@v1
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
         with:
-          owner: microsoft
-          repo: winget-pkgs
-          package-id: GNU.Emacs
-          version: ${{ env.VERSION }}
-          url: ${{ env.URL }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fork: ${{ github.actor }}/winget-pkgs
+          dotnet-version: '8.0.x' # Using the latest LTS version
+
+      - name: Install Komac
+        run: dotnet tool install -g komac.cli
+
+      - name: Publish to WinGet
+        run: komac update GNU.Emacs --urls ${{ env.URL }} --version ${{ env.VERSION }} --submit
+        env:
+          FORK_USER: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
