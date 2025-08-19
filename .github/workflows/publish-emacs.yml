@@ -15,6 +15,7 @@ jobs:
           $latest_installer = $installer_page.Links | Where-Object { $_.href -match 'emacs-.*-installer.exe$' } | ForEach-Object { $_.href } | Sort-Object -Descending | Select-Object -First 1
           $url = "https://ftp.gnu.org/gnu/emacs/windows/$latest_major/$latest_installer"
           echo "URL=$url" >> $env:GITHUB_ENV
+          echo "Complete URL: $url"
 
       - name: Install Komac
         run: dotnet tool install -g komac.cli
