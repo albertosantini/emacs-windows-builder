@@ -1,4 +1,4 @@
-name: Publish Emacs to WinGet
+name: Publish to WinGet
 on:
   workflow_dispatch:
 jobs:
@@ -22,11 +22,12 @@ jobs:
       - name: Download Komac CLI
         shell: pwsh
         run: |
-          curl.exe -L "https://github.com/russellbanks/Komac/releases/download/v2.11.2/komac.exe" -o "komac.exe"
+          $komacExe = "komac-2.12.1-x86_64-pc-windows-msvc.exe"
+          curl.exe -L "https://github.com/russellbanks/Komac/releases/download/v2.12.1/$komacExe" -o "$komacExe"
           echo "$PWD" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Publish to WinGet
-        run: komac update GNU.Emacs --urls ${{ env.URL }} --version ${{ env.VERSION }} --submit
+        run: .\$komacExe update GNU.Emacs --urls ${{ env.URL }} --version ${{ env.VERSION }} --submit
         env:
           FORK_USER: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
