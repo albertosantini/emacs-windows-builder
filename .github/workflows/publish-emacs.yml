@@ -30,14 +30,24 @@ jobs:
         run: '& "$PWD\wingetcreate.exe" update "GNU.Emacs" --urls "${{ env.URL }}|x64|nullsoft|machine" --version "${{ env.VERSION }}" --out .\manifests'
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Update GNU.Emacs to ${{ env.VERSION }}"
-          title: "[New Package] GNU.Emacs ${{ env.VERSION }}"
-          body: "This PR updates GNU.Emacs to version ${{ env.VERSION }}."
-          branch: "update-emacs-${{ env.VERSION }}"
-          base: "master"
-          path: "manifests"
-          repo: "microsoft/winget-pkgs"
-          fork: "${{ github.actor }}/winget-pkgs"
+        shell: pwsh
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          $repoDir = "winget-pkgs"
+          git clone "https://github.com/${{ github.actor }}/winget-pkgs.git" $repoDir
+          Set-Location $repoDir
+
+          $branchName = "update-emacs-${{ env.VERSION }}"
+          git checkout -b $branchName
+
+          Copy-Item -Path "..\manifests\*" -Destination "manifests\g\GNU\Emacs\" -Recurse -Force
+
+          git add .
+          git commit -m "Update GNU.Emacs to ${{ env.VERSION }}"
+          git push origin $branchName
+
+          gh pr create --repo "microsoft/winget-pkgs" --base "master" --head "${{ github.actor }}:$branchName" --title "[New Package] GNU.Emacs ${{ env.VERSION }}" --body "This PR updates GNU.Emacs to version ${{ env.VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
