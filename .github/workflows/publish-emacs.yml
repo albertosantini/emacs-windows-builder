@@ -14,14 +14,18 @@ jobs:
           $installer_page = Invoke-WebRequest -Uri "https://ftp.gnu.org/gnu/emacs/windows/$latest_major/"
           $latest_installer = $installer_page.Links | Where-Object { $_.href -match 'emacs-.*-installer.exe$' } | ForEach-Object { $_.href } | Sort-Object -Descending | Select-Object -First 1
           $url = "https://ftp.gnu.org/gnu/emacs/windows/$latest_major/$latest_installer"
+          $version = ($latest_installer -split '-')[-2]
           echo "URL=$url" >> $env:GITHUB_ENV
+          echo "VERSION=$version" >> $env:GITHUB_ENV
           echo "Complete URL: $url"
 
-      - name: Install Komac
-        run: dotnet tool install -g komac.cli
-
-      - name: Publish to WinGet
-        run: komac update GNU.Emacs --urls ${{ env.URL }} --submit
-        env:
-          FORK_USER: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update WinGet package
+        uses: michidk/winget-updater@v1
+        with:
+          owner: microsoft
+          repo: winget-pkgs
+          package-id: GNU.Emacs
+          version: ${{ env.VERSION }}
+          url: ${{ env.URL }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fork: ${{ github.actor }}/winget-pkgs
