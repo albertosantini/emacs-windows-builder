@@ -16,9 +16,10 @@ jobs:
           $url = "https://ftp.gnu.org/gnu/emacs/windows/$latest_major/$latest_installer"
           echo "URL=$url" >> $env:GITHUB_ENV
 
-      - uses: vedantmgoyal9/winget-releaser@main
+      - name: Publish to WinGet
+        uses: Komefai/komac-action@v1
         with:
-          identifier: GNU.Emacs
-          url: ${{ env.URL }}
+          package-id: GNU.Emacs
+          package-url: ${{ env.URL }}
           fork-user: ${{ github.actor }}
-          pr-title: "[New Package] GNU.Emacs (Latest)"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
