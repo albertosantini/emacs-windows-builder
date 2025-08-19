@@ -36,14 +36,14 @@ jobs:
           curl.exe -L "https://github.com/microsoft/winget-create/releases/download/v1.10.3.0/$wingetCreateExe" -o "$wingetCreateExe"
           echo "$PWD" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Verify Komac Download and PATH
+      - name: Verify winget-create Download and PATH
         shell: pwsh
         run: |
           Get-ChildItem -Path $PWD
           echo "PATH: $env:PATH"
 
       - name: Create winget manifest
-        run: '& "$PWD\wingetcreate.exe" update "GNU.Emacs" --urls "${{ env.URL }}" --version "${{ env.VERSION }}" --installer-sha256 "${{ env.INSTALLER_HASH }}"'
+        run: '& "$PWD\wingetcreate.exe" update "GNU.Emacs" --urls "${{ env.URL }}" --version "${{ env.VERSION }}" --out .\manifests'
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
