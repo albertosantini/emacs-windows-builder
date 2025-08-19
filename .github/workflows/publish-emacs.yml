@@ -16,10 +16,11 @@ jobs:
           $url = "https://ftp.gnu.org/gnu/emacs/windows/$latest_major/$latest_installer"
           echo "URL=$url" >> $env:GITHUB_ENV
 
+      - name: Install Komac
+        run: winget install komac
+
       - name: Publish to WinGet
-        uses: Komefai/komac-action@v1
-        with:
-          package-id: GNU.Emacs
-          package-url: ${{ env.URL }}
-          fork-user: ${{ github.actor }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+        run: komac update GNU.Emacs --urls ${{ env.URL }} --submit
+        env:
+          FORK_USER: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
