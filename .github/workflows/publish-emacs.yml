@@ -38,6 +38,6 @@ jobs:
           body: "This PR updates GNU.Emacs to version ${{ env.VERSION }}."
           branch: "update-emacs-${{ env.VERSION }}"
           base: "master"
-          path: "manifests/g/GNU/Emacs"
+          path: "manifests"
           repo: "microsoft/winget-pkgs"
           fork: "${{ github.actor }}/winget-pkgs"
