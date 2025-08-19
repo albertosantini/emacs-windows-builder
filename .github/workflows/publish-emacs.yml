@@ -41,6 +41,9 @@ jobs:
         run: |
           Set-Location winget-pkgs
 
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
           $branchName = "update-emacs-${{ env.VERSION }}"
           git checkout -b $branchName
 
@@ -48,8 +51,8 @@ jobs:
 
           git add .
           git commit -m "Update GNU.Emacs to ${{ env.VERSION }}"
-          git push origin $branchName
+          git push origin $branchName || { Write-Host "Git push failed. Check permissions."; exit 1 }
 
-          gh pr create --repo "microsoft/winget-pkgs" --base "master" --head "${{ github.actor }}:$branchName" --title "[New Package] GNU.Emacs ${{ env.VERSION }}" --body "This PR updates GNU.Emacs to version ${{ env.VERSION }}"
+          gh pr create --repo "microsoft/winget-pkgs" --base "master" --head "${{ github.actor }}:$branchName" --title "[New Package] GNU.Emacs ${{ env.VERSION }}" --body "This PR updates GNU.Emacs to version ${{ env.VERSION }}" || { Write-Host "PR creation failed. Check permissions."; exit 1 }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
