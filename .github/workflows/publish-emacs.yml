@@ -5,19 +5,21 @@ jobs:
   publish:
     runs-on: windows-latest
     steps:
-      - name: Get latest Emacs version
+      - name: Get latest Emacs version and download installer
         id: get_version
         shell: pwsh
         run: |
           $page = Invoke-WebRequest -Uri "https://ftp.gnu.org/gnu/emacs/windows/"
           $latest_major = $page.Links | Where-Object { $_.href -match 'emacs-\d+/$' } | ForEach-Object { $_.href.TrimEnd('/') } | Sort-Object -Descending | Select-Object -First 1
           $installer_page = Invoke-WebRequest -Uri "https://ftp.gnu.org/gnu/emacs/windows/$latest_major/"
-          $latest_installer = $installer_page.Links | Where-Object { $_.href -match 'emacs-.*-installer.exe$' } | ForEach-Object { $_.href } | Sort-Object -Descending | Select-Object -First 1
-          $url = "https://ftp.gnu.org/gnu/emacs/windows/$latest_major/$latest_installer"
-          $version = ($latest_installer -split '-')[-2]
+          $latest_installer_name = $installer_page.Links | Where-Object { $_.href -match 'emacs-.*-installer.exe$' } | ForEach-Object { $_.href } | Sort-Object -Descending | Select-Object -First 1
+          $url = "https://ftp.gnu.org/gnu/emacs/windows/$latest_major/$latest_installer_name"
+          $version = ($latest_installer_name -split '-')[-2]
           echo "URL=$url" >> $env:GITHUB_ENV
           echo "VERSION=$version" >> $env:GITHUB_ENV
+          echo "INSTALLER_NAME=$latest_installer_name" >> $env:GITHUB_ENV
           echo "Complete URL: $url"
+          curl.exe -L "$url" -o "$latest_installer_name"
 
       - name: Download Komac CLI
         shell: pwsh
@@ -33,10 +35,8 @@ jobs:
           echo "PATH: $env:PATH"
 
       - name: Publish to WinGet
-        shell: pwsh
-        run: |
-          $komacPath = "$PWD\komac-2.12.1-x86_64-pc-windows-msvc.exe"
-          & $komacPath update "GNU.Emacs" --urls "${{ env.URL }}" --version "${{ env.VERSION }}" --submit
+        run: '& "$PWD\komac-2.12.1-x86_64-pc-windows-msvc.exe" update "GNU.Emacs" --urls "${{ env.INSTALLER_NAME }}" --version "${{ env.VERSION }}" --submit'
         env:
           FORK_USER: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
