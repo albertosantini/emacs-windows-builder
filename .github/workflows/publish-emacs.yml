@@ -29,17 +29,17 @@ jobs:
       - name: Create winget manifest
         run: '& "$PWD\wingetcreate.exe" update "GNU.Emacs" --urls "${{ env.URL }}|x64|nullsoft|machine" --version "${{ env.VERSION }}" --out .\manifests'
 
+      - name: Checkout winget-pkgs fork
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.actor }}/winget-pkgs
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: winget-pkgs
+
       - name: Create Pull Request
         shell: pwsh
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global credential.helper store
-          echo "https://oauth2:${{ secrets.GITHUB_TOKEN }}@github.com" > "$HOME/.git-credentials"
-
-          $repoDir = "winget-pkgs"
-          git clone "https://github.com/${{ github.actor }}/winget-pkgs.git" $repoDir
-          Set-Location $repoDir
+          Set-Location winget-pkgs
 
           $branchName = "update-emacs-${{ env.VERSION }}"
           git checkout -b $branchName
@@ -50,7 +50,6 @@ jobs:
           git commit -m "Update GNU.Emacs to ${{ env.VERSION }}"
           git push origin $branchName
 
-          gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
           gh pr create --repo "microsoft/winget-pkgs" --base "master" --head "${{ github.actor }}:$branchName" --title "[New Package] GNU.Emacs ${{ env.VERSION }}" --body "This PR updates GNU.Emacs to version ${{ env.VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
