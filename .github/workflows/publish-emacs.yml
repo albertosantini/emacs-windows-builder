@@ -21,6 +21,14 @@ jobs:
           echo "Complete URL: $url"
           curl.exe -L "$url" -o "$latest_installer_name"
 
+      - name: Calculate Installer Hash
+        id: calculate_hash
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash -Path "${{ env.INSTALLER_NAME }}" -Algorithm SHA256).Hash
+          echo "INSTALLER_HASH=$hash" >> $env:GITHUB_ENV
+          echo "Installer SHA256 Hash: $hash"
+
       - name: Download Komac CLI
         shell: pwsh
         run: |
@@ -35,7 +43,7 @@ jobs:
           echo "PATH: $env:PATH"
 
       - name: Publish to WinGet
-        run: '& "$PWD\komac-2.12.1-x86_64-pc-windows-msvc.exe" update "GNU.Emacs" --urls "${{ env.INSTALLER_NAME }}" --version "${{ env.VERSION }}" --submit'
+        run: '& "$PWD\komac-2.12.1-x86_64-pc-windows-msvc.exe" update "GNU.Emacs" --urls "${{ env.URL }}" --version "${{ env.VERSION }}" --installer-sha256 "${{ env.INSTALLER_HASH }}" --submit'
         env:
           FORK_USER: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
