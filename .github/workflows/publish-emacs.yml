@@ -17,7 +17,7 @@ jobs:
           echo "URL=$url" >> $env:GITHUB_ENV
 
       - name: Install Komac
-        run: winget install komac
+        run: dotnet tool install -g komac.cli
 
       - name: Publish to WinGet
         run: komac update GNU.Emacs --urls ${{ env.URL }} --submit
