@@ -13,10 +13,12 @@ jobs:
           $latest_major = $page.Links | Where-Object { $_.href -match 'emacs-\d+/$' } | ForEach-Object { $_.href.TrimEnd('/') } | Sort-Object -Descending | Select-Object -First 1
           $installer_page = Invoke-WebRequest -Uri "https://ftp.gnu.org/gnu/emacs/windows/$latest_major/"
           $latest_installer = $installer_page.Links | Where-Object { $_.href -match 'emacs-.*-installer.exe$' } | ForEach-Object { $_.href } | Sort-Object -Descending | Select-Object -First 1
-          echo "::set-output name=url::https://ftp.gnu.org/gnu/emacs/windows/$latest_major/$latest_installer"
+          $url = "https://ftp.gnu.org/gnu/emacs/windows/$latest_major/$latest_installer"
+          echo "URL=$url" >> $env:GITHUB_ENV
+
       - uses: vedantmgoyal9/winget-releaser@main
         with:
           identifier: GNU.Emacs
-          url: ${{ steps.get_version.outputs.url }}
+          url: ${{ env.URL }}
           fork-user: ${{ github.actor }}
           pr-title: "[New Package] GNU.Emacs (Latest)"
